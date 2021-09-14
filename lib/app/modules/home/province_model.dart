@@ -1,5 +1,5 @@
 class Province {
-  int? provinceId;
+  String? provinceId;
   String? province;
 
   Province({this.provinceId, this.province});

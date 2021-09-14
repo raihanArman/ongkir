@@ -24,7 +24,6 @@ class BeratBarang extends GetView<HomeController> {
         SizedBox(width: 10),
         Container(
           width: 150,
-          color: Colors.red,
           child: DropdownSearch<String>(
               mode: Mode.BOTTOM_SHEET,
               showSelectedItem: true,

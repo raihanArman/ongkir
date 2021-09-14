@@ -36,7 +36,7 @@ class CityDropdown extends GetView<HomeController> {
               .get(url, headers: {"key": "534af3096d4dae37b3abd65544347a75"});
           var data = (json.decode(response.body) as Map<String, dynamic>);
 
-          var listOfCity = data["rajaongkir"]["result"] as List<dynamic>;
+          var listOfCity = data["rajaongkir"]["results"] as List<dynamic>;
 
           var status = data["rajaongkir"]["status"]["code"];
 
@@ -60,10 +60,14 @@ class CityDropdown extends GetView<HomeController> {
         } else {
           if (type == "asal") {
             print("Tidak memilih Kota asal apapun");
+            controller.cityIdAsal.value = 0;
           } else {
+            controller.cityIdTujuan.value = 0;
             print("Tidak memilih Kota Tujuan apapun");
           }
         }
+
+        controller.showButton();
       },
       popupItemBuilder: (context, item, isSelected) {
         return Container(

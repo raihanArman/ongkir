@@ -31,8 +31,8 @@ class ProvinceDropdown extends GetView<HomeController> {
           final response = await http
               .get(url, headers: {"key": "534af3096d4dae37b3abd65544347a75"});
           var data = (json.decode(response.body) as Map<String, dynamic>);
-
-          var listOfProvince = data["rajaongkir"]["result"] as List<dynamic>;
+          print(data);
+          var listOfProvince = data["rajaongkir"]["results"] as List<dynamic>;
 
           var status = data["rajaongkir"]["status"]["code"];
 
@@ -43,6 +43,7 @@ class ProvinceDropdown extends GetView<HomeController> {
           var models = Province.fromJsonList(listOfProvince);
           return models;
         } catch (err) {
+          print(err);
           return List<Province>.empty();
         }
       },
@@ -50,12 +51,13 @@ class ProvinceDropdown extends GetView<HomeController> {
         if (value != null) {
           if (type == "asal") {
             controller.hiddenKotaAsal.value = false;
-            controller.provinceIdAsal.value = value.provinceId!;
+            controller.provinceIdAsal.value = int.parse(value.provinceId!);
             print(value.province);
           } else {
             controller.hiddenKotaTujuan.value = false;
-            controller.provinceIdTujuan.value = value.provinceId!;
+            controller.provinceIdTujuan.value = int.parse(value.provinceId!);
           }
+          controller.showButton();
         } else {
           if (type == "asal") {
             controller.hiddenKotaAsal.value = true;

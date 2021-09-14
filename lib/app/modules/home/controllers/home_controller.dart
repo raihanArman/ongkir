@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:ongkir/app/modules/home/courier_model.dart';
 
 class HomeController extends GetxController {
   var hiddenKotaAsal = true.obs;
@@ -9,6 +13,56 @@ class HomeController extends GetxController {
   var hiddenKotaTujuan = true.obs;
   var provinceIdTujuan = 0.obs;
   var cityIdTujuan = 0.obs;
+
+  var hiddenButton = true.obs;
+
+  var kurir = "".obs;
+
+  void ongkosKirim() async {
+    Uri url = Uri.parse("https://api.rajaongkir.com/starter/cost");
+    try {
+      final response = await http.post(url, body: {
+        "origin": "$cityIdAsal",
+        "destination": "$cityIdTujuan",
+        "weight": "$berat",
+        "courier": "$kurir"
+      }, headers: {
+        "key": "534af3096d4dae37b3abd65544347a75",
+        "content-type": "application/x-www-form-urlencoded"
+      });
+      var data = json.decode(response.body) as Map<String, dynamic>;
+      var results = data["rajaongkir"]["results"] as List<dynamic>;
+
+      var listCourier = Courier.fromJsonList(results);
+      var courier = listCourier[0];
+
+      print(listCourier[0]);
+      Get.defaultDialog(
+          title: courier.name!,
+          content: Column(
+            children: courier.costs!
+                .map((e) => ListTile(
+                      title: Text("${e.service}"),
+                      subtitle: Text("Rp ${e.cost![0].value}"),
+                      trailing: Text(courier.name == "pos"
+                          ? "${e.cost![0].etd}"
+                          : "${e.cost![0].etd} HARI"),
+                    ))
+                .toList(),
+          ));
+    } catch (err) {
+      print(err);
+      Get.defaultDialog(title: "Terjadi kesalahan");
+    }
+  }
+
+  void showButton() {
+    if (cityIdAsal != 0 && cityIdTujuan != 0 && berat > 0 && kurir != "") {
+      hiddenButton.value = false;
+    } else {
+      hiddenButton.value = true;
+    }
+  }
 
   double berat = 0.0;
   String satuan = "gram";
@@ -58,6 +112,7 @@ class HomeController extends GetxController {
       default:
         berat = berat;
     }
+    showButton();
   }
 
   void ubahSatuan(String value) {
@@ -104,6 +159,8 @@ class HomeController extends GetxController {
     }
 
     satuan = value;
+
+    showButton();
   }
 
   @override
